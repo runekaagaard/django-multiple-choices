@@ -1,9 +1,13 @@
 from django.test import TestCase
 from multiple_choices import MultipleChoiceModelField, NullEncounteredError
 
-class PeopleTestCase(TestCase):
+class MultipleChoiceModelFieldTestCase(TestCase):
     def setUp(self):
         self.m = MultipleChoiceModelField(choices=((1, "Foo"), (2, "Bar"), (3, "Baz")))
+
+    def test_init(self):
+        with self.assertRaises(AssertionError):
+            MultipleChoiceModelField(choices=((x, "") for x in range(64)))
 
     def test_from_db_value(self):
         with self.assertRaises(NullEncounteredError):

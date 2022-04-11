@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 from django.db.models import Lookup, Field
 
 class NullEncounteredError(Exception):
@@ -8,6 +9,7 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
     def __init__(self, *args, **kwargs):
         super(MultipleChoiceModelField, self).__init__(*args, **kwargs)
         self.ns = set(int(x[0]) for x in self.choices)
+        assert sum(2**n for n in self.ns) <= 9223372036854775807, "To many choices. Sry!"
 
     def from_db_value(self, value, expression, connection):
         if value is None:
@@ -30,6 +32,11 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
     def get_prep_value(self, value):
         assert type(value) is set, "The value of a MultipleChoiceModelField is always of type set."
         return sum(2**x for x in value)
+
+    def formfield(self, **kwargs):
+        defaults = {'choices_form_class': forms.TypedMultipleChoiceField}
+        defaults.update(kwargs)
+        return super().formfield(**kwargs)
 
 @Field.register_lookup
 class In(Lookup):
