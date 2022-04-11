@@ -10,19 +10,19 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
 
     def from_db_value(self, value, expression, connection):
         if value is None:
-            raise NullEncounteredError("NULL is not supported, use 0/set() as default value.")
+            raise NullEncounteredError("NULL is not supported, use 0 as default value.")
 
         value = int(value)
         return set(n for n in self.ns if value & (2**n))
 
     def to_python(self, value):
         if value is None:
-            raise NullEncounteredError("NULL is not supported, use 0/set() as default value.")
+            raise NullEncounteredError("None is not supported, use 0/set() as default value.")
         elif isinstance(value, set):
             return value
         else:
             return self.from_db_value(value, 0, 0)
 
     def get_prep_value(self, value):
-        assert type(value) is set
+        assert type(value) is set, "The value of a MultipleChoiceModelField is always of type set."
         return sum(2**x for x in value)

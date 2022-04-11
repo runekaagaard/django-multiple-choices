@@ -21,6 +21,8 @@ class PeopleTestCase(TestCase):
         self.assertEqual(self.m.to_python(set([1, 2, 3])), set([1, 2, 3]))
 
     def test_get_prep_value(self):
+        with self.assertRaises(AssertionError):
+            self.m.get_prep_value(None)
         self.assertEqual(self.m.get_prep_value(set([])), 0)
         self.assertEqual(self.m.get_prep_value(set([1, 2, 3])), 14)
         self.assertEqual(self.m.get_prep_value(set([1, 2])), 6)
