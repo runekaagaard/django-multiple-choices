@@ -13,7 +13,10 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
             raise NullEncounteredError("NULL is not supported, use 0 as default value.")
 
         value = int(value)
-        return set(n for n in self.ns if value & (2**n))
+        if value == 0:
+            return set()
+        else:
+            return set(n for n in self.ns if value & (2**n))
 
     def to_python(self, value):
         if value is None:
