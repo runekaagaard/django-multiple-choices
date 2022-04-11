@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Lookup, Field
 
 class NullEncounteredError(Exception):
     pass
@@ -29,3 +30,43 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
     def get_prep_value(self, value):
         assert type(value) is set, "The value of a MultipleChoiceModelField is always of type set."
         return sum(2**x for x in value)
+
+@Field.register_lookup
+class In(Lookup):
+    lookup_name = 'mcin'
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return '%s <> %s' % (lhs, rhs), params
+
+@Field.register_lookup
+class NotIn(Lookup):
+    lookup_name = 'mcnotin'
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return '%s <> %s' % (lhs, rhs), params
+
+@Field.register_lookup
+class Equal(Lookup):
+    lookup_name = 'mceq'
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return '%s <> %s' % (lhs, rhs), params
+
+@Field.register_lookup
+class NotEqual(Lookup):
+    lookup_name = 'mcneq'
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return '%s <> %s' % (lhs, rhs), params
