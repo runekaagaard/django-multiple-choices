@@ -1,9 +1,12 @@
 # django-multiple-choices
 
-Alternative to https://github.com/disqus/django-bitfield and https://github.com/goinnn/django-multiselectfield/ that
+Alternative to https://github.com/disqus/django-bitfield and https://github.com/goinnn/django-multiselectfield/:
 
 - Works on MySQL (postgres not tested)
 - Stores the selected value as a bitmask value which allows for fast db access
+- Admin support
+- Custom `mc_in` and `mc_notin` filters
+- One file
 
 # Usage
 
@@ -30,7 +33,7 @@ Person.objects.filter(likes__mc_notin={4}) # Persons who doesn't like milk
 
 Exact searching goes like this:
 
-```
+    ```
 Person.objects.filter(likes={2}) # Persons who only likes beef
 ```
 
