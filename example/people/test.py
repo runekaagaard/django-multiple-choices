@@ -1,5 +1,13 @@
+d = dict
 from django.test import TestCase
+from django import forms
 from multiple_choices import MultipleChoiceModelField, NullEncounteredError
+from people.models import Person
+
+class PersonModelForm(forms.ModelForm):
+    class Meta:
+        model = Person
+        exclude = []
 
 class MultipleChoiceModelFieldTestCase(TestCase):
     def setUp(self):
@@ -30,3 +38,13 @@ class MultipleChoiceModelFieldTestCase(TestCase):
         self.assertEqual(self.m.get_prep_value(set([])), 0)
         self.assertEqual(self.m.get_prep_value(set([1, 2, 3])), 14)
         self.assertEqual(self.m.get_prep_value(set([1, 2])), 6)
+
+    def test_form_field(self):
+        html = str(PersonModelForm(instance=Person(likes={2, 3})))
+        print(html)
+        assert 'value="0" selected' not in html
+        assert 'value="1" selected' not in html
+        assert 'value="2" selected' in html
+        assert 'value="3" selected' in html
+        assert 'value="4" selected' not in html
+        print(str(f))
