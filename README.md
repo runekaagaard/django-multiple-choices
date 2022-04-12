@@ -1,9 +1,9 @@
 # django-multiple-choices
 
-Alternative to https://github.com/disqus/django-bitfield and https://github.com/goinnn/django-multiselectfield/ that:
+Alternative to https://github.com/disqus/django-bitfield and https://github.com/goinnn/django-multiselectfield/ that
 
 - Works on MySQL (postgres not tested)
-- Stores the selected value as a bitmask value which allows for fast filtering.
+- Stores the selected value as a bitmask value which allows for fast db access
 
 # Usage
 
@@ -31,4 +31,4 @@ Persons.objects.filter(likes={2}) # Persons who likes beef and nothing else.
 
 # Installation
 
-Copy ´multiple_choices.py` somewhere on your python path.
+Copy `multiple_choices.py` somewhere on your python path.
