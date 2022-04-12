@@ -1,4 +1,5 @@
 d = dict
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django import forms
 from multiple_choices import MultipleChoiceModelField, NullEncounteredError
@@ -41,10 +42,28 @@ class MultipleChoiceModelFieldTestCase(TestCase):
 
     def test_form_field(self):
         html = str(PersonModelForm(instance=Person(likes={2, 3})))
-        print(html)
-        assert 'value="0" selected' not in html
-        assert 'value="1" selected' not in html
-        assert 'value="2" selected' in html
-        assert 'value="3" selected' in html
-        assert 'value="4" selected' not in html
-        print(str(f))
+        assert 'value="0">' in html
+        assert 'value="1">' in html
+        assert 'value="2" selected>' in html
+        assert 'value="3" selected>' in html
+        assert 'value="4">' in html
+
+        f = PersonModelForm(data=d(likes={1, 2}))
+        self.assertEqual(f.is_valid(), True)
+
+        f = PersonModelForm(data=d(likes=set()))
+        self.assertEqual(f.is_valid(), False)
+
+        f = PersonModelForm(data=d(likes=set([999])))
+        self.assertEqual(f.is_valid(), False)
+
+    def test_model_field(self):
+        p = Person(likes={1})
+        p.likes.add(2)
+        self.assertEqual(p.likes, {1, 2})
+        p.likes.remove(2)
+        self.assertEqual(p.likes, {1})
+
+        with self.assertRaises(ValidationError):
+            p.likes.add(999999999)
+            p.full_clean()
