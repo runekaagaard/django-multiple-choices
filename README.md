@@ -5,7 +5,7 @@ Alternative to https://github.com/disqus/django-bitfield and https://github.com/
 - Works on MySQL (postgres not tested)
 - Stores the selected value as a bitmask value which allows for fast db access
 - Admin support
-- Custom `mc_in` and `mc_notin` filters
+- Custom `mc_in` and `mc_notin` query lookups
 - One file
 
 # Usage
