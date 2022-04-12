@@ -33,7 +33,7 @@ Person.objects.filter(likes__mc_notin={4}) # Persons who doesn't like milk
 
 Exact searching goes like this:
 
-    ```
+```
 Person.objects.filter(likes={2}) # Persons who only likes beef
 ```
 
