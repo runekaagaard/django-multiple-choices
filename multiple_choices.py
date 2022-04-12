@@ -27,7 +27,7 @@ class MultipleChoicesWidget(forms.Select):
         attrs["name"] = name
         attrs_str = " ".join(f'{k}="{str(v)}"' for k, v in items(attrs))
         html = [f"<select {attrs_str}>"]
-        for choice in self.choices[1:]:
+        for choice in self.choices:
             selected = " selected" if (value and choice[0] in value) else ""
             html.append(f'<option value="{choice[0]}"{selected}>{choice[1]}</option>')
 
@@ -55,7 +55,8 @@ class MultipleChoicesFormField(forms.MultipleChoiceField):
         kwargs.pop('empty_value', None)
         self.empty_value = set()
         super().__init__(**kwargs)
-        self.ns = set(int(x[0]) for x in self.choices[1:])
+        self.choices = [x for x in self.choices if x[0] != ""]
+        self.ns = set(int(x[0]) for x in self.choices)
 
     def to_python(self, value):
         if not value:
