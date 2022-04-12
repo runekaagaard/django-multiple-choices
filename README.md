@@ -21,12 +21,17 @@ class Person(models.Model):
 
 Both the `choices` and the `required` props are required.
 
-Two new filters are available:
+Two new query lookups `mc_in` and `mc_notin` are available:
 
 ```
-Person.objects.filter(likes__mc__in={0, 1}) # Persons who like pizza and juice
-Person.objects.filter(likes__mc__notin={4}) # Persons who doesn't like milk
-Persons.objects.filter(likes={2}) # Persons who likes beef and nothing else.
+Person.objects.filter(likes__mc_in={0, 1}) # Persons who like pizza and juice
+Person.objects.filter(likes__mc_notin={4}) # Persons who doesn't like milk
+```
+
+Exact searching goes like this:
+
+```
+Person.objects.filter(likes={2}) # Persons who likes beef and nothing else.
 ```
 
 # Installation

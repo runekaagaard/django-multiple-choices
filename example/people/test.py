@@ -79,3 +79,8 @@ class MultipleChoiceModelFieldTestCase(TestCase):
         self.assertEqual(Person.objects.filter(likes__mc_in={6}).count(), 0)
         self.assertEqual(Person.objects.filter(likes__mc_notin={5}).count(), 3)
         self.assertEqual(Person.objects.filter(likes__mc_notin={2}).count(), 0)
+
+    def test_demo_doesnt_chrash(self):
+        Person.objects.filter(likes__mc_in={0, 1})  # Persons who like pizza and juice
+        Person.objects.filter(likes__mc_notin={4})  # Persons who doesn't like milk
+        Person.objects.filter(likes={2})  # Persons who likes beef and nothing else.
