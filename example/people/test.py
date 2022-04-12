@@ -67,3 +67,15 @@ class MultipleChoiceModelFieldTestCase(TestCase):
         with self.assertRaises(ValidationError):
             p.likes.add(999999999)
             p.full_clean()
+
+    def test_lookups(self):
+        Person.objects.create(likes={0, 2, 1})
+        Person.objects.create(likes={1, 4, 2})
+        Person.objects.create(likes={5, 4, 1, 2})
+        Person.objects.create(likes={2, 3})
+        self.assertEqual(Person.objects.count(), 4)
+        self.assertEqual(Person.objects.filter(likes__mc_in={1}).count(), 3)
+        self.assertEqual(Person.objects.filter(likes__mc_in={5}).count(), 1)
+        self.assertEqual(Person.objects.filter(likes__mc_in={6}).count(), 0)
+        self.assertEqual(Person.objects.filter(likes__mc_notin={5}).count(), 3)
+        self.assertEqual(Person.objects.filter(likes__mc_notin={2}).count(), 0)

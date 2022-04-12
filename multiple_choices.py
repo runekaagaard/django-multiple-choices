@@ -34,8 +34,6 @@ class MultipleChoicesWidget(forms.Select):
 
         return "".join(html)
 
-    allow_multiple_selected = True
-
     def value_from_datadict(self, data, files, name):
         try:
             getter = data.getlist
@@ -84,6 +82,7 @@ class MultipleChoicesFormField(forms.MultipleChoiceField):
 
 class MultipleChoiceModelField(models.PositiveBigIntegerField):
     def __init__(self, *args, **kwargs):
+        self.required = kwargs.pop("required")
         super(MultipleChoiceModelField, self).__init__(*args, **kwargs)
         self.ns = set(int(x[0]) for x in self.choices)
         assert sum(2**n for n in self.ns) <= 9223372036854775807, "To many choices. Sry!"
@@ -111,7 +110,7 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
         return sum(2**x for x in value)
 
     def formfield(self, **kwargs):
-        defaults = {'choices_form_class': MultipleChoicesFormField}
+        defaults = {'choices_form_class': MultipleChoicesFormField, 'required': self.required}
         defaults.update(kwargs)
         return super().formfield(**defaults)
 
@@ -125,40 +124,20 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
 
 @Field.register_lookup
 class In(Lookup):
-    lookup_name = 'mcin'
+    lookup_name = 'mc_in'
 
     def as_sql(self, compiler, connection):
         lhs, lhs_params = self.process_lhs(compiler, connection)
         rhs, rhs_params = self.process_rhs(compiler, connection)
         params = lhs_params + rhs_params
-        return '%s <> %s' % (lhs, rhs), params
+        return '%s & %s != 0' % (lhs, rhs), params
 
 @Field.register_lookup
 class NotIn(Lookup):
-    lookup_name = 'mcnotin'
+    lookup_name = 'mc_notin'
 
     def as_sql(self, compiler, connection):
         lhs, lhs_params = self.process_lhs(compiler, connection)
         rhs, rhs_params = self.process_rhs(compiler, connection)
         params = lhs_params + rhs_params
-        return '%s <> %s' % (lhs, rhs), params
-
-@Field.register_lookup
-class Equal(Lookup):
-    lookup_name = 'mceq'
-
-    def as_sql(self, compiler, connection):
-        lhs, lhs_params = self.process_lhs(compiler, connection)
-        rhs, rhs_params = self.process_rhs(compiler, connection)
-        params = lhs_params + rhs_params
-        return '%s <> %s' % (lhs, rhs), params
-
-@Field.register_lookup
-class NotEqual(Lookup):
-    lookup_name = 'mcneq'
-
-    def as_sql(self, compiler, connection):
-        lhs, lhs_params = self.process_lhs(compiler, connection)
-        rhs, rhs_params = self.process_rhs(compiler, connection)
-        params = lhs_params + rhs_params
-        return '%s <> %s' % (lhs, rhs), params
+        return '%s & %s == 0' % (lhs, rhs), params
