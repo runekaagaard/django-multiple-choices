@@ -59,6 +59,10 @@ class MultipleChoiceModelFieldTestCase(TestCase):
 
     def test_model_field(self):
         p = Person(likes={1})
+        p.save()
+        p = Person.objects.get(pk=p.pk)
+        self.assertEqual(p.likes, {1})
+
         p.likes.add(2)
         self.assertEqual(p.likes, {1, 2})
         p.likes.remove(2)
