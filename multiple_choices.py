@@ -84,6 +84,7 @@ class MultipleChoicesFormField(forms.MultipleChoiceField):
 class MultipleChoicesModelField(models.PositiveBigIntegerField):
     def __init__(self, *args, **kwargs):
         self.required = kwargs.pop("required")
+        kwargs["default"] = set()
         super(MultipleChoicesModelField, self).__init__(*args, **kwargs)
         self.ns = set(int(x[0]) for x in self.choices)
         assert sum(2**n for n in self.ns) <= 9223372036854775807, "To many choices. Sry!"
