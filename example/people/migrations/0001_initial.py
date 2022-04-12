@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False,
                                            verbose_name='ID')),
                 ('likes',
-                 multiple_choices.MultipleChoiceModelField(
+                 multiple_choices.MultipleChoicesModelField(
                      required=True, choices=[(0, 'Pizza'), (1, 'Juice'), (2, 'Beef'), (3, 'Orange juice'),
                                              (4, 'Milk')])),
             ],

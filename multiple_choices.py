@@ -80,10 +80,10 @@ class MultipleChoicesFormField(forms.MultipleChoiceField):
         elif self.required:
             raise ValidationError(self.error_messages['required'], code='required')
 
-class MultipleChoiceModelField(models.PositiveBigIntegerField):
+class MultipleChoicesModelField(models.PositiveBigIntegerField):
     def __init__(self, *args, **kwargs):
         self.required = kwargs.pop("required")
-        super(MultipleChoiceModelField, self).__init__(*args, **kwargs)
+        super(MultipleChoicesModelField, self).__init__(*args, **kwargs)
         self.ns = set(int(x[0]) for x in self.choices)
         assert sum(2**n for n in self.ns) <= 9223372036854775807, "To many choices. Sry!"
 
@@ -106,7 +106,7 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
             return self.from_db_value(value, 0, 0)
 
     def get_prep_value(self, value):
-        assert type(value) is set, "The value of a MultipleChoiceModelField is always of type set."
+        assert type(value) is set, "The value of a MultipleChoicesModelField is always of type set."
         return sum(2**x for x in value)
 
     def formfield(self, **kwargs):
@@ -121,6 +121,11 @@ class MultipleChoiceModelField(models.PositiveBigIntegerField):
                 raise ValidationError("Invalid value {}".format(n))
 
         return value
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        kwargs['required'] = self.required
+        return name, path, args, kwargs
 
 @Field.register_lookup
 class In(Lookup):
